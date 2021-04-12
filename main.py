@@ -1,5 +1,5 @@
-from ORM.app_model import AppLink, AppData, GameLink, GameData
-from ORM.category_model import AppCategory, GameCategory
+from models.app_model import AppLink, AppData, GameLink, GameData
+from models.category_model import AppCategory, GameCategory
 from crawler.config import GAME_BASE_URL, APP_BASE_URL
 from crawler.farsroid import FarsroidLinkCrawler, FarsroidDataCrawler
 import sys

@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from ORM.app_model import AppLink, GameLink, AppData, GameData
+from models.app_model import AppLink, GameLink, AppData, GameData
 from crawler.parser import Parser
 from abc import ABC, abstractmethod
 from threading import Thread

@@ -1,5 +1,5 @@
-from ORM.category_model import AppCategory, GameCategory
-from ORM.model import BaseModel
+from models.category_model import AppCategory, GameCategory
+from models.base_model import BaseModel
 from peewee import CharField, BooleanField, TextField, ForeignKeyField
 
 
