@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from ORM.model import AppsLinks, AppsData
+
+from ORM.app_model import AppLink, GameLink, AppData, GameData
 from crawler.parser import Parser
 from abc import ABC, abstractmethod
 from threading import Thread
@@ -28,8 +29,16 @@ class BaseCrawler(ABC):
 
 
 class FarsroidLinkCrawler(BaseCrawler):
-    def __init__(self, url):
+    def __init__(self, url, mode):
         self.url = url
+        self.store = self._set_orm(mode)
+
+    @staticmethod
+    def _set_orm(mode):
+        if mode == 'app':
+            return AppLink()
+        if mode == 'game':
+            return GameLink()
 
     @staticmethod
     def parser(response):
@@ -55,7 +64,7 @@ class FarsroidLinkCrawler(BaseCrawler):
                       f'Page: {page}\t|\t'
                       f'Capacity of crawled link: {len(links)}')
 
-                AppsLinks.save_links(links)
+                self.store.save_links(links)
                 pages.task_done()
             else:
                 pages.task_done()
@@ -80,13 +89,23 @@ class FarsroidLinkCrawler(BaseCrawler):
 
 
 class FarsroidDataCrawler(BaseCrawler):
-    def __init__(self):
+    def __init__(self, mode):
+        self.mode = mode
+        self.store = self._set_orm()
         self.parser = Parser()
         self.links = self._set_links()
 
-    @staticmethod
-    def _set_links():
-        return AppsLinks.load_links()
+    def _set_orm(self):
+        if self.mode == 'app':
+            return AppData()
+        if self.mode == 'game':
+            return GameData()
+
+    def _set_links(self):
+        if self.mode == 'app':
+            return AppLink.load_links()
+        if self.mode == 'game':
+            return GameLink.load_links()
 
     def data_crawler(self, links, index_thread):
         while links.qsize():
@@ -95,7 +114,7 @@ class FarsroidDataCrawler(BaseCrawler):
             response = self.get(link)
 
             if response is not None:
-                data = self.parser.parse(response, link)
+                data = self.parser.parse(response, link, self.mode)
 
                 if data is not None:
                     app_data = data[0]
@@ -105,9 +124,9 @@ class FarsroidDataCrawler(BaseCrawler):
                         f'Thread: {index_thread}\t|\t'
                         f'Link: {link}\t|\t'
                         f'Count: {count}\t|\t'
-                        f'Data crawled: {app_data}'
                     )
-                    AppsData.save_app(app_data)
+
+                    self.store.save_app(app_data)
                     links.task_done()
 
                 else:

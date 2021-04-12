@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+import re
 
 
 class Parser:
@@ -12,6 +13,7 @@ class Parser:
             name = self.soup.find('h1', attrs={'class': 'entry-title'})
             name = name.text.strip()
             name = name.replace('دانلود ', '')
+            name = re.sub(r'–.*', '', name)
             return name
         except:
             return None
@@ -51,18 +53,53 @@ class Parser:
         except:
             return None
 
-    def parse(self, response, link):
+    def parse(self, response, link, mode):
         self.soup = BeautifulSoup(response.content, 'html.parser')
+        information = self._set_information
 
-        data = {
-            'name': self._set_name,
-            'image': self._set_image,
-            'download_links': self._set_download_links,
-            'information': self._set_information,
-            'link': link
-        }
-        self.counter += 1
+        if mode == 'app':
+            if len(information) == 4:
 
-        if None not in data.values() and len(data['information']) == 4:
-            return data, self.counter
-        return None
+                data = {
+                    'name': self._set_name,
+                    'image': self._set_image,
+                    'download_links': self._set_download_links,
+                    'last_updated': information[0],
+                    'price': information[2],
+                    'version': information[1],
+                    'category': information[3],
+                    'link': link
+                }
+
+                self.counter += 1
+
+                if None not in data.values():
+                    return data, self.counter
+
+                return None
+            return None
+
+        elif mode == 'game':
+
+            if len(information) == 6:
+
+                data = {
+                    'name': self._set_name,
+                    'image': self._set_image,
+                    'download_links': self._set_download_links,
+                    'last_updated': information[0],
+                    'price': information[3],
+                    'version': information[1],
+                    'age': information[2],
+                    'internet': information[5],
+                    'category': information[4],
+                    'link': link
+                }
+
+                self.counter += 1
+
+                if None not in data.values():
+                    return data, self.counter
+
+                return None
+            return None

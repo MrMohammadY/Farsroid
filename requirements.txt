@@ -1,8 +1,12 @@
 beautifulsoup4==4.9.3
 certifi==2020.12.5
+cffi==1.14.5
 chardet==4.0.0
+cryptography==3.4.7
 idna==2.10
+Khayyam==3.0.17
 peewee==3.14.3
+pycparser==2.20
 PyMySQL==1.0.2
 requests==2.25.1
 soupsieve==2.2
