@@ -1,4 +1,4 @@
-from ORM.model import BaseModel
+from models.base_model import BaseModel
 from peewee import CharField
 
 
